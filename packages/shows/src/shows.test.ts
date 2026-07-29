@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ArcadeEngine, CueBank, FakeAudioBackend, type GestureId } from "@pwa/arcade-engine";
-import { ConsentManager } from "@pwa/shell";
+import { ArcadeEngine, CueBank, FakeAudioBackend, type GestureId } from "@sw/arcade-engine";
+import { ConsentManager } from "@sw/shell";
 import { ALL_SHOWS, PURE_SHAPES, YEAR_7_8, YEAR_9_10 } from "./index.js";
 
 describe("shows — three complete, distinct shows", () => {

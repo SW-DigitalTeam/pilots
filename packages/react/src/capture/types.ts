@@ -1,4 +1,4 @@
-import type { DegradationAction, PoseFrame } from "@pwa/arcade-engine";
+import type { DegradationAction, PoseFrame } from "@sw/arcade-engine";
 
 /**
  * The capture seam. The component depends on this interface, not on MediaPipe,

@@ -1,4 +1,4 @@
-import type { ShowConfig } from "@pwa/arcade-engine";
+import type { ShowConfig } from "@sw/arcade-engine";
 import { buildCues } from "./cueFactory.js";
 
 /**

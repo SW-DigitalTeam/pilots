@@ -1,4 +1,4 @@
-import type { DegradationAction, Landmark, Pose, PoseFrame } from "@pwa/arcade-engine";
+import type { DegradationAction, Landmark, Pose, PoseFrame } from "@sw/arcade-engine";
 import type { CaptureOptions, PoseCapture } from "./types.js";
 
 /**

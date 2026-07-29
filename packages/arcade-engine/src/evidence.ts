@@ -1,4 +1,4 @@
-import type { CameraPoseClaim } from "@pwa/shell";
+import type { CameraPoseClaim } from "@sw/shell";
 import type { SessionSummary } from "./types.js";
 
 /**

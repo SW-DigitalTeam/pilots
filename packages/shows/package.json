@@ -1,5 +1,5 @@
 {
-  "name": "@pwa/arcade-shows",
+  "name": "@sw/arcade-shows",
   "version": "0.1.0",
   "description": "Three genuinely distinct ShowConfig files for Arcade Arena: a Year 7-8 high-energy character show, a Year 9-10 slick rhythm show, and a character-free pure-shape show.",
   "type": "module",
@@ -8,9 +8,9 @@
   "exports": { ".": "./src/index.ts" },
   "scripts": { "typecheck": "tsc -b" },
   "dependencies": {
-    "@pwa/arcade-engine": "workspace:*"
+    "@sw/arcade-engine": "*"
   },
   "devDependencies": {
-    "@pwa/shell": "workspace:*"
+    "@sw/shell": "*"
   }
 }

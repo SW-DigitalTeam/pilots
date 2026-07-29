@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ConsentManager, validateCameraPoseClaim } from "@pwa/shell";
+import { ConsentManager, validateCameraPoseClaim } from "@sw/shell";
 import { ArcadeEngine } from "./engine.js";
 import { FakeAudioBackend } from "./audio/backend.js";
 import { buildPose } from "./replay/skeleton.js";

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, extname, join } from "node:path";
-import { validateCameraPoseClaim } from "@pwa/shell";
+import { validateCameraPoseClaim } from "@sw/shell";
 import { summaryToClaim } from "./evidence.js";
 import type { SessionSummary } from "./types.js";
 

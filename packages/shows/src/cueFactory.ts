@@ -1,4 +1,4 @@
-import type { Cue, GestureId } from "@pwa/arcade-engine";
+import type { Cue, GestureId } from "@sw/arcade-engine";
 
 /**
  * Builds a show's cue bank from per-show English personality pools, mapped onto

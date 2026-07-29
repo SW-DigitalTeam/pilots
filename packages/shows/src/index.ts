@@ -1,4 +1,4 @@
-import type { ShowConfig } from "@pwa/arcade-engine";
+import type { ShowConfig } from "@sw/arcade-engine";
 import { YEAR_7_8 } from "./year78.js";
 import { YEAR_9_10 } from "./year910.js";
 import { PURE_SHAPES } from "./pureShapes.js";

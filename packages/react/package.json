@@ -1,5 +1,5 @@
 {
-  "name": "@pwa/arcade-react",
+  "name": "@sw/arcade-react",
   "version": "0.1.0",
   "description": "React binding that mounts the arcade-engine: the ArcadeArena component, the calibration/gameplay lifecycle, the canvas renderer, cheap 3-shape lip sync, and the MediaPipe pose capture. Consumes the shell's consent gate and cameraPose provider.",
   "type": "module",
@@ -13,8 +13,8 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@pwa/arcade-engine": "workspace:*",
-    "@pwa/shell": "workspace:*"
+    "@sw/arcade-engine": "*",
+    "@sw/shell": "*"
   },
   "peerDependencies": {
     "react": ">=18",

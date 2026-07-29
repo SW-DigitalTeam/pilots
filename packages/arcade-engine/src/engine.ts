@@ -1,4 +1,4 @@
-import type { ConsentGate } from "@pwa/shell";
+import type { ConsentGate } from "@sw/shell";
 import { AudioScheduler, type SchedulerOptions } from "./audio/scheduler.js";
 import type { AudioBackend } from "./audio/backend.js";
 import { Transport } from "./audio/clock.js";
@@ -97,6 +97,7 @@ export class ArcadeEngine {
   private readonly calls: ScheduledCall[] = [];
   private readonly recentFires: GestureEvent[] = [];
   private consentUnsub: (() => void) | null = null;
+  private finalSummary: SessionSummary | null = null;
 
   constructor(private readonly opts: EngineOptions) {
     this.language = opts.language ?? opts.show.defaultLanguage;
@@ -293,8 +294,11 @@ export class ArcadeEngine {
 
   /** End the session, emit evidence + summary. Idempotent. */
   end(): SessionSummary {
+    // Truly idempotent: cache the summary so a second end() returns the same
+    // object (endedAt included) and never re-emits evidence.
+    if (this.finalSummary) return this.finalSummary;
     const summary = this.buildSummary();
-    if (this.phase === "ended") return summary;
+    this.finalSummary = summary;
     this.phase = "ended";
     this.scheduler?.stop();
     this.consentUnsub?.();
