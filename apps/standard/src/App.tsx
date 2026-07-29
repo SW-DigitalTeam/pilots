@@ -3,6 +3,7 @@ import { ConsentManager, CameraPoseProvider, type CameraPoseClaim } from "@pwa/s
 import { ArcadeArena } from "@pwa/arcade-react";
 import { ALL_SHOWS } from "@pwa/arcade-shows";
 import type { InputProfile, Mode, ShowConfig } from "@pwa/arcade-engine";
+import { supabase } from "./supabase";
 
 /**
  * The shell. It OWNS consent and the cameraPose provider; ArcadeArena consumes
@@ -15,11 +16,30 @@ export function App(): React.JSX.Element {
   const provider = useMemo(
     () =>
       new CameraPoseProvider((claim: CameraPoseClaim) => {
-        // The sink is the ONLY egress. In a real pilot this POSTs the derived
-        // numbers to the score service; here we record them locally.
         submitted.current.push(claim);
-        // eslint-disable-next-line no-console
         console.log("evidence submitted (derived numbers only):", claim);
+
+        supabase
+          .from("claims")
+          .insert({
+            provider: claim.provider,
+            schema_version: claim.schemaVersion,
+            team_id: claim.team.id,
+            team_label: claim.team.label,
+            show: claim.show,
+            mode: claim.mode,
+            input_profile: claim.inputProfile,
+            started_at: claim.startedAt,
+            ended_at: claim.endedAt,
+            active_seconds: claim.activeSeconds,
+            movement_magnitude: claim.movementMagnitude,
+            team_score: claim.teamScore,
+            gesture_counts: claim.gestureCounts,
+            players_tracked: claim.playersTracked,
+          })
+          .then(({ error }) => {
+            if (error) console.error("supabase insert failed:", error);
+          });
       }),
     [],
   );
