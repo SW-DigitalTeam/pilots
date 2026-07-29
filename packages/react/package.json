@@ -13,8 +13,8 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@sw/arcade-engine": "*",
-    "@sw/shell": "*"
+    "@sw/arcade-engine": "workspace:*",
+    "@sw/shell": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18",

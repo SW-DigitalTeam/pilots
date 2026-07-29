@@ -1,8 +1,8 @@
 import React, { useMemo, useRef, useState } from "react";
-import { ConsentManager, CameraPoseProvider, type CameraPoseClaim } from "@pwa/shell";
-import { ArcadeArena } from "@pwa/arcade-react";
-import { ALL_SHOWS } from "@pwa/arcade-shows";
-import type { InputProfile, Mode, ShowConfig } from "@pwa/arcade-engine";
+import { ConsentManager, CameraPoseProvider, type CameraPoseClaim } from "@sw/shell";
+import { ArcadeArena } from "@sw/arcade-react";
+import { ALL_SHOWS } from "@sw/arcade-shows";
+import type { InputProfile, Mode, ShowConfig } from "@sw/arcade-engine";
 import { supabase } from "./supabase";
 
 /**

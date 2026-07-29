@@ -1,30 +1,30 @@
 {
-  "name": "arcade-arena",
+  "name": "pwatemplate",
   "version": "0.1.0",
   "private": true,
-  "description": "Arcade Arena — a browser, body-as-controller movement game for NZ school gyms, plus the privacy, identity and measurement floor to run it in real schools. Structured for later absorption into the Sport Waikato pwatemplate platform.",
+  "description": "PWA template monorepo for Sport Waikato school-gym pilots. Hosts the shell contract, the framework-agnostic arcade-engine, its React binding, and starter apps.",
   "type": "module",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -b --pretty",
     "privacy:audit": "node scripts/privacy-audit.mjs",
-    "check:migrations": "node scripts/check-migrations.mjs",
-    "test:db": "supabase test db",
     "gen:fixtures": "node scripts/generate-fixtures.mjs",
     "gen:voice": "node scripts/generate-voice-script.mjs",
-    "verify": "npm run typecheck && npm run test && npm run privacy:audit",
-    "dev:app": "npm run dev --workspace @sw/app-standard",
-    "build:app": "npm run build --workspace @sw/app-standard"
+    "verify": "pnpm typecheck && pnpm test && pnpm privacy:audit",
+    "dev:standard": "pnpm --filter @sw/app-standard dev",
+    "build:standard": "pnpm --filter @sw/app-standard build"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
     "esbuild": "0.21.5",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

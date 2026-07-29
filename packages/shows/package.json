@@ -8,9 +8,9 @@
   "exports": { ".": "./src/index.ts" },
   "scripts": { "typecheck": "tsc -b" },
   "dependencies": {
-    "@sw/arcade-engine": "*"
+    "@sw/arcade-engine": "workspace:*"
   },
   "devDependencies": {
-    "@sw/shell": "*"
+    "@sw/shell": "workspace:*"
   }
 }

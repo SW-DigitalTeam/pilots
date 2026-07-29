@@ -23,21 +23,21 @@ importers:
 
   apps/standard:
     dependencies:
-      '@pwa/arcade-engine':
-        specifier: workspace:*
-        version: link:../../packages/arcade-engine
-      '@pwa/arcade-react':
-        specifier: workspace:*
-        version: link:../../packages/react
-      '@pwa/arcade-shows':
-        specifier: workspace:*
-        version: link:../../packages/shows
-      '@pwa/shell':
-        specifier: workspace:*
-        version: link:../../packages/shell
       '@supabase/supabase-js':
         specifier: ^2.49.1
         version: 2.111.0
+      '@sw/arcade-engine':
+        specifier: workspace:*
+        version: link:../../packages/arcade-engine
+      '@sw/arcade-react':
+        specifier: workspace:*
+        version: link:../../packages/react
+      '@sw/arcade-shows':
+        specifier: workspace:*
+        version: link:../../packages/shows
+      '@sw/shell':
+        specifier: workspace:*
+        version: link:../../packages/shell
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -60,16 +60,16 @@ importers:
 
   packages/arcade-engine:
     dependencies:
-      '@pwa/shell':
+      '@sw/shell':
         specifier: workspace:*
         version: link:../shell
 
   packages/react:
     dependencies:
-      '@pwa/arcade-engine':
+      '@sw/arcade-engine':
         specifier: workspace:*
         version: link:../arcade-engine
-      '@pwa/shell':
+      '@sw/shell':
         specifier: workspace:*
         version: link:../shell
     devDependencies:
@@ -100,11 +100,11 @@ importers:
 
   packages/shows:
     dependencies:
-      '@pwa/arcade-engine':
+      '@sw/arcade-engine':
         specifier: workspace:*
         version: link:../arcade-engine
     devDependencies:
-      '@pwa/shell':
+      '@sw/shell':
         specifier: workspace:*
         version: link:../shell
 
