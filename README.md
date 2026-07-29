@@ -43,7 +43,7 @@ API, it does not reimplement it (`ArcadeEngine.requestStart()` returns
   seconds, movement magnitude, team score, gesture counts — leave, and only
   through one chokepoint (`summaryToClaim` → the `cameraPose` provider, which
   validates every claim). No `MediaRecorder`, no `toDataURL`/`toBlob`, no
-  canvas pixel export anywhere. The privacy audit (`pnpm privacy:audit`) greps
+  canvas pixel export anywhere. The privacy audit (`npm run privacy:audit`) greps
   every shipped file and fails the build on any pixel-egress API; the schema
   validator rejects any claim carrying a forbidden key or a per-student field.
   A **persistent on-screen indicator** — "Camera on. Nothing is recorded or
@@ -153,7 +153,7 @@ fills are hard-edged, motion snaps rather than eases.
 ## The build loop — critics encoded as tests
 
 The adversarial critic pass bars from the brief are encoded as an executable
-test suite (`pnpm test`, 155 tests), so a gesture is *proven*, not eyeballed. A
+test suite (`npm test`, 155 tests), so a gesture is *proven*, not eyeballed. A
 `replay` rig feeds recorded landmark sequences (`packages/arcade-engine/fixtures/*.json`)
 through the real engine.
 
@@ -169,11 +169,12 @@ through the real engine.
 ## Running it
 
 ```bash
-pnpm install
-pnpm test           # 155 tests
-pnpm typecheck      # tsc -b across all packages
-pnpm privacy:audit  # grep for pixel-egress APIs
-pnpm dev:standard   # run the starter app (needs a webcam)
+npm install
+npm test              # 155 tests
+npm run typecheck     # tsc -b across all packages
+npm run privacy:audit # grep for pixel-egress APIs
+npm run check:migrations
+npm run dev:app       # run the dev app shell (needs a webcam)
 node scripts/generate-fixtures.mjs   # regenerate the JSON fixture library
 ```
 

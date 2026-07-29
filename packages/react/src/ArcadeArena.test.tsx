@@ -1,9 +1,9 @@
 import React from "react";
 import { describe, expect, it, beforeAll, vi } from "vitest";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
-import { ConsentManager, validateCameraPoseClaim, type CameraPoseClaim } from "@pwa/shell";
-import type { PoseFrame, ShowConfig } from "@pwa/arcade-engine";
-import { buildPose } from "@pwa/arcade-engine/replay";
+import { ConsentManager, validateCameraPoseClaim, type CameraPoseClaim } from "@sw/shell";
+import type { PoseFrame, ShowConfig } from "@sw/arcade-engine";
+import { buildPose } from "@sw/arcade-engine/replay";
 import { ArcadeArena } from "./ArcadeArena.js";
 import { FakeBrowserBackend, FakePoseCapture } from "./testing.js";
 import type { CaptureOptions } from "./capture/types.js";

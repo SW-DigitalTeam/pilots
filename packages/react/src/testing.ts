@@ -1,4 +1,4 @@
-import { FakeAudioBackend, type PoseFrame } from "@pwa/arcade-engine";
+import { FakeAudioBackend, type PoseFrame } from "@sw/arcade-engine";
 import type { BrowserBackend } from "./backend.js";
 import type { CaptureOptions, PoseCapture } from "./capture/types.js";
 

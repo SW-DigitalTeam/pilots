@@ -10,8 +10,8 @@ import {
   type ShowConfig,
   type Team,
   summaryToClaim,
-} from "@pwa/arcade-engine";
-import type { CameraPoseClaim, ConsentGate } from "@pwa/shell";
+} from "@sw/arcade-engine";
+import type { CameraPoseClaim, ConsentGate } from "@sw/shell";
 import { CameraIndicator } from "./CameraIndicator.js";
 import { MediaPipeCapture } from "./capture/mediapipeCapture.js";
 import type { CaptureOptions, PoseCapture } from "./capture/types.js";

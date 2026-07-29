@@ -1,4 +1,4 @@
-import type { ConsentGate } from "@pwa/shell";
+import type { ConsentGate } from "@sw/shell";
 import { AudioScheduler, type SchedulerOptions } from "./audio/scheduler.js";
 import type { AudioBackend } from "./audio/backend.js";
 import { Transport } from "./audio/clock.js";

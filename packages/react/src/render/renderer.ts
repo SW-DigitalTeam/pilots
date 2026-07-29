@@ -1,4 +1,4 @@
-import type { GestureId, RenderState, ShowConfig } from "@pwa/arcade-engine";
+import type { GestureId, RenderState, ShowConfig } from "@sw/arcade-engine";
 import type { MouthShape } from "./mouth.js";
 
 export interface RenderDims {

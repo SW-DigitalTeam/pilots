@@ -1,5 +1,5 @@
 {
-  "name": "@pwa/arcade-engine",
+  "name": "@sw/arcade-engine",
   "version": "0.1.0",
   "description": "Framework-agnostic core for Arcade Arena: pose interpretation, gesture state machines, the audio-clock lookahead scheduler, procedural music bed, cue-bank rotation, effort scoring, and the session orchestrator. Zero React imports — the WebXR starter can mount it too.",
   "type": "module",
@@ -13,6 +13,6 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@pwa/shell": "workspace:*"
+    "@sw/shell": "*"
   }
 }
