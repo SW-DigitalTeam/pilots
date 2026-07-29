@@ -157,5 +157,17 @@ create policy movement_entries_write on movement_entries for all
   using (auth_is_sw_admin() or auth_is_staff_of(school_id))
   with check (auth_is_sw_admin() or auth_is_staff_of(school_id));
 
+-- ---------------------------------------------------------------------------
+-- Table privileges. RLS gates ROWS, but a role also needs table-level
+-- privileges or Postgres denies access before RLS is even consulted. Grant the
+-- coarse privileges to the Supabase roles and let the policies above do the
+-- actual restriction. anon gets SELECT only; every policy keys on auth.uid(),
+-- which is null for anon, so RLS returns zero rows (never a leak).
+-- ---------------------------------------------------------------------------
+grant usage on schema public to anon, authenticated;
+grant select on all tables in schema public to anon, authenticated;
+grant insert, update, delete on all tables in schema public to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+
 comment on function auth_school_ids() is
   'Schools the current auth.uid() holds any role in. The tenancy spine for every school-scoped policy.';
