@@ -1,0 +1,27 @@
+{
+  "name": "@pwa/app-standard",
+  "version": "0.1.0",
+  "description": "The standard starter app: the shell that owns consent + the cameraPose provider and mounts ArcadeArena. Proves the package integrates cleanly.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@pwa/arcade-engine": "workspace:*",
+    "@pwa/arcade-react": "workspace:*",
+    "@pwa/arcade-shows": "workspace:*",
+    "@pwa/shell": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}

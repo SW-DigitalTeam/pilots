@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "references": [{ "path": "../shell" }, { "path": "../arcade-engine" }],
+  "include": ["src"]
+}

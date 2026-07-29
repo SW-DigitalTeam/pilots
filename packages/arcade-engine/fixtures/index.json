@@ -1,0 +1,118 @@
+[
+  {
+    "name": "real-jump",
+    "file": "real-jump.json",
+    "profile": "standing",
+    "expect": {
+      "jump": 1
+    },
+    "note": "A genuine launch clears minRise and fires exactly once."
+  },
+  {
+    "name": "fake-jump-bob",
+    "file": "fake-jump-bob.json",
+    "profile": "standing",
+    "expect": {},
+    "note": "A bob arms then fizzles below minRise: no fire."
+  },
+  {
+    "name": "lean-forward",
+    "file": "lean-forward.json",
+    "profile": "standing",
+    "expect": {},
+    "note": "A lean drops the shoulders but not the knees: duck must NOT fire."
+  },
+  {
+    "name": "sidestep-right",
+    "file": "sidestep-right.json",
+    "profile": "standing",
+    "expect": {
+      "sidestep": 1
+    },
+    "note": "A clear step past the gate fires once, direction right."
+  },
+  {
+    "name": "sidestep-left",
+    "file": "sidestep-left.json",
+    "profile": "standing",
+    "expect": {
+      "sidestep": 1
+    },
+    "note": "Mirror of sidestep-right, direction left."
+  },
+  {
+    "name": "duck-squat",
+    "file": "duck-squat.json",
+    "profile": "standing",
+    "expect": {
+      "duck": 1
+    },
+    "note": "Shoulder drop WITH knee bend fires duck once; no false jump on rise."
+  },
+  {
+    "name": "reach-up",
+    "file": "reach-up.json",
+    "profile": "standing",
+    "expect": {
+      "reach": 1
+    },
+    "note": "A wrist raised above the shoulder line fires reach once."
+  },
+  {
+    "name": "stumble",
+    "file": "stumble.json",
+    "profile": "standing",
+    "expect": {},
+    "note": "Small stagger under every gate: no gesture fires."
+  },
+  {
+    "name": "turn-in-place",
+    "file": "turn-in-place.json",
+    "profile": "standing",
+    "expect": {},
+    "note": "Turning narrows the shoulders but moves nothing through a gate."
+  },
+  {
+    "name": "bystander-walkthrough",
+    "file": "bystander-walkthrough.json",
+    "profile": "standing",
+    "expect": {},
+    "note": "An unregistered bystander crossing frame never fires the tracked player."
+  },
+  {
+    "name": "sustained-duck",
+    "file": "sustained-duck.json",
+    "profile": "standing",
+    "expect": {
+      "duck": 1
+    },
+    "note": "A held duck fires exactly once, never chatters."
+  },
+  {
+    "name": "double-jump",
+    "file": "double-jump.json",
+    "profile": "standing",
+    "expect": {
+      "jump": 2
+    },
+    "note": "Two distinct jumps fire twice — cooldown gates repeats, not new moves."
+  },
+  {
+    "name": "two-player-jump",
+    "file": "two-player-jump.json",
+    "profile": "standing",
+    "expect": {
+      "jump": 2
+    },
+    "note": "Two tracked players jump independently; two fires, no cross-talk."
+  },
+  {
+    "name": "seated-reach",
+    "file": "seated-reach.json",
+    "profile": "seated",
+    "expect": {
+      "reach": 1
+    },
+    "note": "Seated profile fires reach identically to standing."
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "name": "@pwa/shell",
+  "version": "0.1.0",
+  "description": "Template platform contract: data-class consent API and the ActivityProvider registry, including the cameraPose provider and its evidence-claim schema. Pilots depend on this; they never reimplement consent or evidence transport.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b"
+  }
+}
