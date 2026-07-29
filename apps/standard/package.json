@@ -1,5 +1,5 @@
 {
-  "name": "@sw/app-standard",
+  "name": "@pwa/app-standard",
   "version": "0.1.0",
   "description": "The standard starter app: the shell that owns consent + the cameraPose provider and mounts ArcadeArena. Proves the package integrates cleanly.",
   "type": "module",
@@ -11,10 +11,11 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@sw/arcade-engine": "*",
-    "@sw/arcade-react": "*",
-    "@sw/arcade-shows": "*",
-    "@sw/shell": "*",
+    "@pwa/arcade-engine": "workspace:*",
+    "@pwa/arcade-react": "workspace:*",
+    "@pwa/arcade-shows": "workspace:*",
+    "@pwa/shell": "workspace:*",
+    "@supabase/supabase-js": "^2.49.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
