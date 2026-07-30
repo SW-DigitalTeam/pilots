@@ -11,7 +11,17 @@ import type { CaptureOptions } from "./capture/types.js";
 beforeAll(() => {
   globalThis.requestAnimationFrame = vi.fn(() => 0) as unknown as typeof requestAnimationFrame;
   globalThis.cancelAnimationFrame = vi.fn();
-  const ctxStub = new Proxy({}, { get: () => () => undefined, set: () => true });
+  const gradient = { addColorStop: () => undefined };
+  const ctxStub = new Proxy(
+    {},
+    {
+      get: (_t, prop) => {
+        if (prop === "createLinearGradient" || prop === "createRadialGradient") return () => gradient;
+        return () => undefined;
+      },
+      set: () => true,
+    },
+  );
   HTMLCanvasElement.prototype.getContext = vi.fn(
     () => ctxStub,
   ) as unknown as typeof HTMLCanvasElement.prototype.getContext;
