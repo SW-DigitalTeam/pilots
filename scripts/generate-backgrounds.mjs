@@ -46,17 +46,31 @@ const BACKGROUNDS = [
   },
 ];
 
-const api = async (path, options = {}) => {
-  const res = await fetch(`https://api.replicate.com/v1${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Token ${token}`,
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-  return res.json();
+const api = async (path, options = {}, retries = 5) => {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`https://api.replicate.com/v1${path}`, {
+      ...options,
+      headers: {
+        Authorization: `Token ${token}`,
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+    if (res.status === 429 && attempt < retries) {
+      let wait = 8000;
+      try {
+        const body = await res.json();
+        if (body.retry_after) wait = Math.ceil(body.retry_after * 1000) + 1000;
+      } catch {
+        /* keep default */
+      }
+      console.log(`  rate limited; waiting ${Math.round(wait / 1000)}s ...`);
+      await sleep(wait);
+      continue;
+    }
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    return res.json();
+  }
 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

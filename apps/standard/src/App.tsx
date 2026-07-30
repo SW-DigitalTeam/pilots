@@ -4,6 +4,7 @@ import { ArcadeArena } from "@sw/arcade-react";
 import { ALL_SHOWS } from "@sw/arcade-shows";
 import type { InputProfile, Mode, ShowConfig } from "@sw/arcade-engine";
 import { supabase } from "./supabase";
+import { Leaderboard } from "./Leaderboard";
 
 export function App(): React.JSX.Element {
   const consent = useMemo(() => new ConsentManager(), []);
@@ -44,6 +45,7 @@ export function App(): React.JSX.Element {
   const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
   const [team, setTeam] = useState({ id: "room-12", label: "Room 12" });
   const [ready, setReady] = useState(false);
+  const [showBoard, setShowBoard] = useState(false);
   const [, force] = useState(0);
 
   const grantAndGo = () => {
@@ -68,6 +70,18 @@ export function App(): React.JSX.Element {
             force((n) => n + 1);
           }}
         />
+      </div>
+    );
+  }
+
+  if (showBoard) {
+    return (
+      <div className="setup-outer">
+        <StyleInjector />
+        <div className="setup-bg" />
+        <div className="setup-inner">
+          <Leaderboard onClose={() => setShowBoard(false)} />
+        </div>
       </div>
     );
   }
@@ -122,6 +136,9 @@ export function App(): React.JSX.Element {
 
         <button onClick={grantAndGo} className="setup-go" aria-label="Allow camera and start">
           Allow camera & Start
+        </button>
+        <button onClick={() => setShowBoard(true)} className="setup-board" aria-label="View leaderboard">
+          🏆 Leaderboard
         </button>
         <div className="setup-note">Camera stays on this device. Nothing is recorded or sent.</div>
       </div>
@@ -292,6 +309,19 @@ function StyleInjector(): React.JSX.Element {
       }
       .setup-go:hover { transform: scale(1.04); }
       .setup-go:active { transform: scale(0.96); }
+      .setup-board {
+        font: bold clamp(17px, 3vw, 22px) system-ui;
+        padding: 12px 28px;
+        background: rgba(255,255,255,0.06);
+        border: 2px solid rgba(255,212,0,0.4);
+        color: #ffd400;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        animation: slideUp 0.5s ease 0.3s both;
+      }
+      .setup-board:hover { background: rgba(255,212,0,0.15); box-shadow: 0 0 20px rgba(255,212,0,0.2); }
+      .setup-board:active { transform: scale(0.96); }
       .setup-note {
         color: rgba(255,255,255,0.35);
         font: 600 clamp(13px, 2.5vw, 16px) system-ui;
