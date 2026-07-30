@@ -114,6 +114,10 @@ export class ArcadeEngine {
     return this.phase;
   }
 
+  get calibrationFrameCount(): number {
+    return this.interpreter.calibrationFrameCount;
+  }
+
   /**
    * Gate on consent. This is the hard refusal: no camera data class, no start.
    * The engine does not ask for consent itself — the shell owns that.

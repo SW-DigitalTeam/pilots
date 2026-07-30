@@ -47,6 +47,7 @@ export function App(): React.JSX.Element {
 
   const [show, setShow] = useState<ShowConfig>(ALL_SHOWS[0]!);
   const [profile, setProfile] = useState<InputProfile>("standing");
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
   const [team, setTeam] = useState({ id: "room-12", label: "Room 12" });
   const [ready, setReady] = useState(false);
   const [, force] = useState(0);
@@ -67,6 +68,7 @@ export function App(): React.JSX.Element {
           team={team}
           consent={consent}
           profile={profile}
+          cameraFacingMode={facingMode}
           onEvidence={(claim) => {
             provider.submit(claim);
             force((n) => n + 1);
@@ -94,6 +96,8 @@ export function App(): React.JSX.Element {
       <div style={S.row}>
         <Toggle on={profile === "standing"} onClick={() => setProfile("standing")} label="Stand" />
         <Toggle on={profile === "seated"} onClick={() => setProfile("seated")} label="Sit" />
+        <Toggle on={facingMode === "environment"} onClick={() => setFacingMode("environment")} label="Rear Cam" />
+        <Toggle on={facingMode === "user"} onClick={() => setFacingMode("user")} label="Selfie Cam" />
         <input
           value={team.label}
           onChange={(e) => setTeam({ id: e.target.value.toLowerCase().replace(/\s+/g, "-"), label: e.target.value })}

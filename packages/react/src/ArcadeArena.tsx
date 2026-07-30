@@ -35,6 +35,8 @@ export interface ArcadeArenaProps {
   /** Test seams — real defaults are Web Audio + MediaPipe. */
   createBackend?: () => BrowserBackend;
   createCapture?: (opts: CaptureOptions) => PoseCapture;
+  /** Camera facing mode. "environment" (rear camera) is default for full-body detection. */
+  cameraFacingMode?: "user" | "environment";
 }
 
 type Phase = "idle" | "need-camera" | "calibrating" | "running" | "ended" | "error";
@@ -64,6 +66,7 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
   const [phase, setPhase] = useState<Phase>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [summary, setSummary] = useState<SessionSummary | null>(null);
+  const [calFrames, setCalFrames] = useState(0);
 
   const engineRef = useRef<ArcadeEngine | null>(null);
   const backendRef = useRef<BrowserBackend | null>(null);
@@ -89,6 +92,7 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
       if (!engine || !backend) return;
       if (phaseRef.current === "calibrating") {
         engine.addCalibrationFrame(frame);
+        setCalFrames(engine.calibrationFrameCount);
         if (backend.currentTime - calStartRef.current >= calibrationSeconds) {
           const players = engine.finishCalibration();
           if (players > 0) {
@@ -157,7 +161,11 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
       return;
     }
 
-    const opts: CaptureOptions = { onFrame: handleFrame, numPoses: 4 };
+    const opts: CaptureOptions = {
+      onFrame: handleFrame,
+      numPoses: 4,
+      facingMode: props.cameraFacingMode ?? "environment",
+    };
     const capture = props.createCapture ? props.createCapture(opts) : new MediaPipeCapture(opts);
     captureRef.current = capture;
     calStartRef.current = backend.currentTime;
@@ -239,8 +247,15 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
 
       {phase === "calibrating" && (
         <Center>
-          <div style={{ color: show.palette.ink, font: "bold 72px system-ui", textAlign: "center" }}>
-            Stand still
+          <div style={{ color: show.palette.ink, textAlign: "center" }}>
+            <div style={{ font: "bold 72px system-ui" }}>
+              {profile === "seated" ? "Sit still" : "Stand still"}
+            </div>
+            <div style={{ font: "600 22px system-ui", opacity: 0.6, marginTop: 12 }}>
+              {calFrames > 0
+                ? `Detected ${calFrames} frames — hold steady`
+                : "Make sure your shoulders and hips are visible"}
+            </div>
           </div>
         </Center>
       )}

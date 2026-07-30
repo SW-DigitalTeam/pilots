@@ -23,4 +23,6 @@ export interface CaptureOptions {
   /** Model asset + wasm locations, cached by the service worker. */
   modelAssetPath?: string;
   wasmBasePath?: string;
+  /** Camera facing mode. "environment" (rear) works best for full-body pose detection. */
+  facingMode?: "user" | "environment";
 }

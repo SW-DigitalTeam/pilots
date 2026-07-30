@@ -42,7 +42,10 @@ export class MediaPipeCapture implements PoseCapture {
     });
 
     this.stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 640, height: 480, facingMode: "user" },
+      video: {
+        width: 640, height: 480,
+        facingMode: this.opts.facingMode ?? "environment",
+      },
       audio: false,
     });
     const video = document.createElement("video");

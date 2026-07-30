@@ -247,6 +247,12 @@ export class PoseInterpreter {
     return this.phase === "running" && this.runtimes.size > 0;
   }
 
+  get calibrationFrameCount(): number {
+    let total = 0;
+    for (const acc of this.calAccum.values()) total += acc.torsos.length;
+    return total;
+  }
+
   /** Process one gameplay frame. `now` is audio-clock seconds. */
   ingest(frame: PoseFrame, now: number): InterpretResult {
     if (this.phase !== "running") {
