@@ -209,32 +209,32 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
       )}
 
       {phase === "instructions" && (
-        <Center>
-          <div className="instructions-panel" style={{ color: show.palette.ink, textAlign: "center", maxWidth: 640, padding: 20, animation: "fadeIn 0.3s ease" }}>
-            <div style={{ font: "bold 48px system-ui", marginBottom: 4 }}>{show.title}</div>
-            <div style={{ font: "600 18px system-ui", opacity: 0.5, marginBottom: 24 }}>
+        <Center scroll>
+          <div className="instructions-panel" style={{ color: show.palette.ink, textAlign: "center", maxWidth: 640, width: "100%", padding: 16, animation: "fadeIn 0.3s ease" }}>
+            <div className="instr-title" style={{ font: "bold clamp(30px, 7vw, 48px) system-ui", marginBottom: 4 }}>{show.title}</div>
+            <div style={{ font: "600 clamp(14px, 3vw, 18px) system-ui", opacity: 0.5, marginBottom: 20 }}>
               {mode.charAt(0).toUpperCase() + mode.slice(1)} mode · {profile === "seated" ? "Seated" : "Standing"}
             </div>
 
-            <div style={{ font: "600 22px system-ui", marginBottom: 16 }}>How to play</div>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginBottom: 24 }}>
+            <div style={{ font: "600 clamp(18px, 4vw, 22px) system-ui", marginBottom: 14 }}>How to play</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10, marginBottom: 20 }}>
               {show.vocabulary.map((g: string) => {
                 const info = GESTURE_INFO[g];
                 if (!info) return null;
                 return (
                   <div key={g} style={{
-                    background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "12px 16px",
-                    border: "1px solid rgba(255,255,255,0.1)", minWidth: 120,
+                    background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "12px 10px",
+                    border: "1px solid rgba(255,255,255,0.1)",
                   }}>
-                    <div style={{ fontSize: 36 }}>{info.icon}</div>
-                    <div style={{ font: "bold 20px system-ui", marginTop: 4 }}>{info.name}</div>
-                    <div style={{ font: "600 13px system-ui", opacity: 0.5, marginTop: 2 }}>{info.desc}</div>
+                    <div style={{ fontSize: "clamp(26px, 6vw, 36px)" }}>{info.icon}</div>
+                    <div style={{ font: "bold clamp(16px, 3.5vw, 20px) system-ui", marginTop: 4 }}>{info.name}</div>
+                    <div style={{ font: "600 clamp(11px, 2.5vw, 13px) system-ui", opacity: 0.5, marginTop: 2 }}>{info.desc}</div>
                   </div>
                 );
               })}
             </div>
 
-            <div style={{ font: "600 16px system-ui", opacity: 0.6, marginBottom: 24 }}>
+            <div style={{ font: "600 clamp(13px, 3vw, 16px) system-ui", opacity: 0.6, marginBottom: 20 }}>
               A shape will appear with a cue. Do the move when the shape lights up. Stay active to earn points!
             </div>
 
@@ -265,11 +265,11 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
 
       {phase === "calibrating" && (
         <Center>
-          <div style={{ color: show.palette.ink, textAlign: "center", animation: "fadeIn 0.3s ease" }}>
-            <div style={{ font: "bold 72px system-ui", textShadow: calFrames > 5 ? "0 0 30px rgba(124,58,237,0.4)" : "none", transition: "text-shadow 0.5s ease" }}>
+          <div style={{ color: show.palette.ink, textAlign: "center", animation: "fadeIn 0.3s ease", padding: 16 }}>
+            <div style={{ font: "bold clamp(40px, 11vw, 72px) system-ui", textShadow: calFrames > 5 ? "0 0 30px rgba(124,58,237,0.4)" : "none", transition: "text-shadow 0.5s ease" }}>
               {profile === "seated" ? "Sit still" : "Stand still"}
             </div>
-            <div style={{ font: "600 22px system-ui", opacity: 0.6, marginTop: 14 }}>
+            <div style={{ font: "600 clamp(16px, 4vw, 22px) system-ui", opacity: 0.6, marginTop: 14 }}>
               {calFrames > 0
                 ? `Detected ${calFrames} frames — hold steady`
                 : profile === "seated"
@@ -301,19 +301,19 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
       )}
 
       {phase === "ended" && summary && (
-        <Center>
-          <div style={{ color: show.palette.ink, textAlign: "center", animation: showScore ? "scorePop 0.6s cubic-bezier(0.34,1.56,0.64,1)" : "none" }}>
+        <Center scroll>
+          <div style={{ color: show.palette.ink, textAlign: "center", padding: 16, animation: showScore ? "scorePop 0.6s cubic-bezier(0.34,1.56,0.64,1)" : "none" }}>
             <div style={{
-              font: "bold 120px system-ui", letterSpacing: "-3px", lineHeight: 1,
+              font: "bold clamp(72px, 20vw, 120px) system-ui", letterSpacing: "-3px", lineHeight: 1,
               background: "linear-gradient(135deg, #fff 20%, #a78bfa 50%, #00ffa3 80%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               filter: "drop-shadow(0 0 30px rgba(124,58,237,0.5))",
             }}>
               {summary.teamScore}
             </div>
-            <div style={{ font: "bold 36px system-ui", opacity: 0.7, marginTop: 8 }}>Movement Points</div>
-            <div style={{ font: "600 24px system-ui", opacity: 0.5, marginTop: 4 }}>{team.label}</div>
-            <div style={{ marginTop: 24, display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={{ font: "bold clamp(24px, 6vw, 36px) system-ui", opacity: 0.7, marginTop: 8 }}>Movement Points</div>
+            <div style={{ font: "600 clamp(17px, 4vw, 24px) system-ui", opacity: 0.5, marginTop: 4 }}>{team.label}</div>
+            <div style={{ marginTop: 24, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 10, maxWidth: 640 }}>
               {[
                 { label: "Active", value: `${Math.round(summary.activeSeconds)}s` },
                 { label: "Magnitude", value: summary.movementMagnitude.toFixed(2) },
@@ -323,11 +323,11 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
                 { label: "Reaches", value: String(summary.gestureCounts.reach) },
               ].map((stat) => (
                 <div key={stat.label} style={{
-                  background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "12px 20px",
+                  background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "12px 16px",
                   backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.08)",
                 }}>
-                  <div style={{ font: "600 14px system-ui", opacity: 0.5, textTransform: "uppercase", letterSpacing: "1px" }}>{stat.label}</div>
-                  <div style={{ font: "bold 28px system-ui", marginTop: 2 }}>{stat.value}</div>
+                  <div style={{ font: "600 clamp(11px, 2.5vw, 14px) system-ui", opacity: 0.5, textTransform: "uppercase", letterSpacing: "1px" }}>{stat.label}</div>
+                  <div style={{ font: "bold clamp(22px, 5vw, 28px) system-ui", marginTop: 2 }}>{stat.value}</div>
                 </div>
               ))}
             </div>
@@ -352,8 +352,8 @@ function ArenaStyles(): React.JSX.Element {
         50% { box-shadow: 0 0 25px rgba(124,58,237,0.6), 0 0 50px rgba(124,58,237,0.3); }
       }
       .btn-start {
-        font: bold 64px system-ui, sans-serif;
-        padding: 28px 72px;
+        font: bold clamp(38px, 9vw, 64px) system-ui, sans-serif;
+        padding: clamp(16px, 4vw, 28px) clamp(40px, 9vw, 72px);
         border: none;
         background: linear-gradient(135deg, #7c3aed, #a78bfa);
         color: #fff;
@@ -368,8 +368,8 @@ function ArenaStyles(): React.JSX.Element {
       .btn-finish {
         position: absolute;
         bottom: 20px; right: 20px;
-        font: bold 28px system-ui;
-        padding: 12px 32px;
+        font: bold clamp(18px, 4vw, 28px) system-ui;
+        padding: 10px 26px;
         border: 2px solid rgba(255,255,255,0.3);
         background: rgba(255,255,255,0.08);
         color: #fff;
@@ -378,21 +378,26 @@ function ArenaStyles(): React.JSX.Element {
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         transition: all 0.25s ease;
+        z-index: 11;
       }
       .btn-finish:hover { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.6); box-shadow: 0 0 20px rgba(239,68,68,0.3); }
       .btn-finish:active { transform: scale(0.93); transition: all 0.1s ease; }
-      @media (max-width: 600px) {
-        .btn-start { font-size: 42px !important; padding: 20px 48px !important; }
-        .btn-finish { font-size: 22px !important; padding: 8px 24px !important; }
-        .instructions-panel { padding: 12px !important; font-size: 14px !important; }
-      }
     `}</style>
   );
 }
 
-function Center({ children }: { children: React.ReactNode }): React.JSX.Element {
+function Center({ children, scroll }: { children: React.ReactNode; scroll?: boolean }): React.JSX.Element {
+  if (scroll) {
+    return (
+      <div style={{ position: "absolute", inset: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", display: "flex", flexDirection: "column", zIndex: 2 }}>
+        <div style={{ margin: "auto", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", padding: "16px 0" }}>
+          {children}
+        </div>
+      </div>
+    );
+  }
   return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
+    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2, overflow: "hidden" }}>
       {children}
     </div>
   );
