@@ -28,11 +28,13 @@ export class MediaPipeCapture implements PoseCapture {
   async start(): Promise<void> {
     const vision = (await import("@mediapipe/tasks-vision")) as unknown as MediaPipeModule;
     const fileset = await vision.FilesetResolver.forVisionTasks(
-      this.opts.wasmBasePath ?? "/mediapipe/wasm",
+      this.opts.wasmBasePath ?? "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm",
     );
     this.landmarker = await vision.PoseLandmarker.createFromOptions(fileset, {
       baseOptions: {
-        modelAssetPath: this.opts.modelAssetPath ?? "/mediapipe/pose_landmarker_lite.task",
+        modelAssetPath:
+          this.opts.modelAssetPath ??
+          "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task",
         delegate: "GPU",
       },
       runningMode: "VIDEO",

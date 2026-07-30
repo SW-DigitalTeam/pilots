@@ -37,7 +37,7 @@ export interface ArcadeArenaProps {
   createCapture?: (opts: CaptureOptions) => PoseCapture;
 }
 
-type Phase = "idle" | "need-camera" | "calibrating" | "running" | "ended";
+type Phase = "idle" | "need-camera" | "calibrating" | "running" | "ended" | "error";
 
 const BIG_BUTTON: React.CSSProperties = {
   font: "bold 64px system-ui, sans-serif",
@@ -62,6 +62,7 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
   const calibrationSeconds = props.calibrationSeconds ?? 5;
 
   const [phase, setPhase] = useState<Phase>("idle");
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [summary, setSummary] = useState<SessionSummary | null>(null);
 
   const engineRef = useRef<ArcadeEngine | null>(null);
@@ -161,7 +162,17 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
     captureRef.current = capture;
     calStartRef.current = backend.currentTime;
     setPhase("calibrating");
-    await capture.start();
+    try {
+      await capture.start();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMessage(msg);
+      setPhase("error");
+      backendRef.current = null;
+      engineRef.current = null;
+      captureRef.current = null;
+      return;
+    }
     renderLoop();
   }, [show, mode, team, profile, consent, handleFrame, renderLoop, props]);
 
@@ -192,6 +203,36 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
         <Center>
           <div style={{ color: show.palette.ink, font: "bold 40px system-ui", textAlign: "center" }}>
             Camera needed
+          </div>
+        </Center>
+      )}
+
+      {phase === "error" && (
+        <Center>
+          <div
+            style={{
+              color: show.palette.ink,
+              font: "bold 28px system-ui",
+              textAlign: "center",
+              maxWidth: 600,
+            }}
+          >
+            <div style={{ fontSize: 48, marginBottom: 16 }}>Something went wrong</div>
+            <div style={{ opacity: 0.7, fontSize: 20, wordBreak: "break-word" }}>
+              {errorMessage}
+            </div>
+            <div style={{ marginTop: 24 }}>
+              <button
+                style={BIG_BUTTON}
+                onClick={() => {
+                  setPhase("idle");
+                  setErrorMessage("");
+                  stopAll();
+                }}
+              >
+                Try again
+              </button>
+            </div>
           </div>
         </Center>
       )}
