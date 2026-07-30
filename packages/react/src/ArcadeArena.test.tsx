@@ -9,11 +9,8 @@ import { FakeBrowserBackend, FakePoseCapture } from "./testing.js";
 import type { CaptureOptions } from "./capture/types.js";
 
 beforeAll(() => {
-  // jsdom lacks rAF; a no-op (never re-schedules) is enough for the lifecycle.
   globalThis.requestAnimationFrame = vi.fn(() => 0) as unknown as typeof requestAnimationFrame;
   globalThis.cancelAnimationFrame = vi.fn();
-  // jsdom has no 2D context; a permissive stub lets the real renderer run so
-  // drawFrame is exercised (and silences jsdom's not-implemented noise).
   const ctxStub = new Proxy({}, { get: () => () => undefined, set: () => true });
   HTMLCanvasElement.prototype.getContext = vi.fn(
     () => ctxStub,
@@ -87,21 +84,24 @@ function harness() {
 }
 
 describe("ArcadeArena — integration critic", () => {
-  it("refuses to start without camera consent", async () => {
+  it("shows instructions then refuses to start without camera consent", async () => {
     const { ui } = harness();
     render(ui);
     fireEvent.click(screen.getByLabelText("Start"));
+    await waitFor(() => expect(screen.getByText("How to play")).toBeTruthy());
+    fireEvent.click(screen.getByLabelText("Ready"));
     await waitFor(() => expect(screen.getByText("Camera needed")).toBeTruthy());
     cleanup();
   });
 
-  it("shows the persistent camera indicator once running", async () => {
+  it("shows calibration screen after clicking Ready with consent", async () => {
     const { ui, consent } = harness();
     consent.grant("camera", "class movement game");
     render(ui);
     fireEvent.click(screen.getByLabelText("Start"));
+    await waitFor(() => expect(screen.getByText("How to play")).toBeTruthy());
+    fireEvent.click(screen.getByLabelText("Ready"));
     await waitFor(() => expect(screen.getByText("Stand still")).toBeTruthy());
-    expect(screen.getByText("Camera on. Nothing is recorded or sent.")).toBeTruthy();
     cleanup();
   });
 
@@ -110,10 +110,11 @@ describe("ArcadeArena — integration critic", () => {
     consent.grant("camera", "class movement game");
     render(ui);
     fireEvent.click(screen.getByLabelText("Start"));
+    await waitFor(() => expect(screen.getByText("How to play")).toBeTruthy());
+    fireEvent.click(screen.getByLabelText("Ready"));
     await waitFor(() => expect(screen.getByText("Stand still")).toBeTruthy());
 
     const capture = getCapture();
-    // Calibration: still frames while the clock crosses calibrationSeconds=1s.
     let t = 0;
     for (let i = 0; i < 40; i++) {
       t += 0.04;
@@ -122,7 +123,6 @@ describe("ArcadeArena — integration critic", () => {
     }
     await waitFor(() => expect(screen.getByLabelText("Finish")).toBeTruthy());
 
-    // Gameplay: periodic jumps to accrue score + a gesture count.
     for (let i = 0; i < 200; i++) {
       t += 0.04;
       backend.advanceTo(t);

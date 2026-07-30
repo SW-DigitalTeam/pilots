@@ -12,7 +12,6 @@ import {
   summaryToClaim,
 } from "@sw/arcade-engine";
 import type { CameraPoseClaim, ConsentGate } from "@sw/shell";
-import { CameraIndicator } from "./CameraIndicator.js";
 import { MediaPipeCapture } from "./capture/mediapipeCapture.js";
 import type { CaptureOptions, PoseCapture } from "./capture/types.js";
 import type { BrowserBackend } from "./backend.js";
@@ -34,7 +33,14 @@ export interface ArcadeArenaProps {
   cameraFacingMode?: "user" | "environment";
 }
 
-type Phase = "idle" | "need-camera" | "calibrating" | "running" | "ended" | "error";
+type Phase = "idle" | "instructions" | "need-camera" | "calibrating" | "running" | "ended" | "error";
+
+const GESTURE_INFO: Record<string, { name: string; icon: string; desc: string }> = {
+  jump: { name: "Jump", icon: "⬆", desc: "Jump up or raise your hands high" },
+  duck: { name: "Duck", icon: "⬇", desc: "Crouch down or squat low" },
+  sidestep: { name: "Step", icon: "↔", desc: "Step sideways left or right" },
+  reach: { name: "Reach", icon: "✋", desc: "Reach up with both arms" },
+};
 
 export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
   const { show, mode, team, consent } = props;
@@ -62,9 +68,7 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
   const stopAll = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
     captureRef.current?.stop();
-    if (previewRef.current) {
-      previewRef.current.innerHTML = "";
-    }
+    if (previewRef.current) previewRef.current.innerHTML = "";
   }, []);
 
   useEffect(() => () => stopAll(), [stopAll]);
@@ -100,38 +104,25 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
     const canvas = canvasRef.current;
     if (engine && backend && canvas) {
       let ctx: CanvasRenderingContext2D | null = null;
-      try {
-        ctx = canvas.getContext("2d");
-      } catch {
-        ctx = null;
-      }
+      try { ctx = canvas.getContext("2d"); } catch { ctx = null; }
       if (ctx) {
         const state = engine.getRenderState(backend.currentTime);
         const amp = backend.voiceAmplitude();
-        drawFrame(
-          ctx,
-          { width: canvas.width, height: canvas.height },
-          state,
-          show,
-          { mouth: mouthShapeForAmplitude(amp), voiceAmp: amp },
-        );
+        drawFrame(ctx, { width: canvas.width, height: canvas.height }, state, show, {
+          mouth: mouthShapeForAmplitude(amp), voiceAmp: amp,
+        });
       }
     }
     rafRef.current = requestAnimationFrame(renderLoop);
   }, [show]);
 
-  const start = useCallback(async () => {
+  const beginCalibration = useCallback(async () => {
     const backend = props.createBackend ? props.createBackend() : new WebAudioBackend(new AudioContext());
     await backend.unlock();
     backendRef.current = backend;
 
     const engine = new ArcadeEngine({
-      show,
-      mode,
-      team,
-      profile,
-      consent,
-      backend,
+      show, mode, team, profile, consent, backend,
       language: props.language,
       onEvidence: (claim) => props.onEvidence(claim as CameraPoseClaim),
       onSessionEnd: (s) => props.onSessionEnd?.(s),
@@ -139,14 +130,10 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
     engineRef.current = engine;
 
     const startResult = engine.requestStart();
-    if (!startResult.ok) {
-      setPhase("need-camera");
-      return;
-    }
+    if (!startResult.ok) { setPhase("need-camera"); return; }
 
     const opts: CaptureOptions = {
-      onFrame: handleFrame,
-      numPoses: 4,
+      onFrame: handleFrame, numPoses: 4,
       facingMode: props.cameraFacingMode ?? "environment",
     };
     const capture = props.createCapture ? props.createCapture(opts) : new MediaPipeCapture(opts);
@@ -191,46 +178,23 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", background: show.palette.background, overflow: "hidden" }}>
       <ArenaStyles />
-      <CameraIndicator live={live} />
+
       {live && (
-        <div
-          ref={previewRef}
-          style={{
-            position: "absolute", bottom: 24, left: 24,
-            width: "min(220px, 28vw)", height: "min(160px, 20vw)",
-            borderRadius: 12, border: "2px solid rgba(255,255,255,0.25)",
-            boxShadow: "0 0 20px rgba(0,0,0,0.4)",
-            background: "#000", overflow: "hidden",
-            zIndex: 10,
-          }}
-        >
-          <div style={{
-            position: "absolute", inset: 0,
-            border: "3px dashed rgba(0,255,163,0.4)",
-            borderRadius: 12,
-            pointerEvents: "none", zIndex: 1,
-          }} />
+        <div ref={previewRef} style={{
+          position: "absolute", bottom: 24, left: 24,
+          width: "min(220px, 28vw)", height: "min(160px, 20vw)",
+          borderRadius: 12, border: "2px solid rgba(255,255,255,0.25)",
+          boxShadow: "0 0 20px rgba(0,0,0,0.4)",
+          background: "#000", overflow: "hidden", zIndex: 10,
+        }}>
+          <div style={{ position: "absolute", inset: 0, border: "3px dashed rgba(0,255,163,0.4)", borderRadius: 12, pointerEvents: "none", zIndex: 1 }} />
           {profile === "standing" && (
-            <div style={{
-              position: "absolute", top: "20%", left: "25%", right: "25%", bottom: "10%",
-              border: "2px dashed rgba(0,255,163,0.25)",
-              borderRadius: 8,
-              pointerEvents: "none", zIndex: 1,
-            }} />
+            <div style={{ position: "absolute", top: "20%", left: "25%", right: "25%", bottom: "10%", border: "2px dashed rgba(0,255,163,0.25)", borderRadius: 8, pointerEvents: "none", zIndex: 1 }} />
           )}
           {profile === "seated" && (
-            <div style={{
-              position: "absolute", top: "10%", left: "20%", right: "20%", bottom: "50%",
-              border: "2px dashed rgba(0,255,163,0.25)",
-              borderRadius: 8,
-              pointerEvents: "none", zIndex: 1,
-            }} />
+            <div style={{ position: "absolute", top: "10%", left: "20%", right: "20%", bottom: "50%", border: "2px dashed rgba(0,255,163,0.25)", borderRadius: 8, pointerEvents: "none", zIndex: 1 }} />
           )}
-          <div style={{
-            position: "absolute", top: 6, left: 8,
-            font: "600 10px system-ui", color: "rgba(255,255,255,0.5)",
-            pointerEvents: "none", zIndex: 2,
-          }}>
+          <div style={{ position: "absolute", top: 6, left: 8, font: "600 10px system-ui", color: "rgba(255,255,255,0.5)", pointerEvents: "none", zIndex: 2 }}>
             {profile === "seated" ? "Show shoulders" : "Show full body"}
           </div>
         </div>
@@ -238,9 +202,46 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
 
       {phase === "idle" && (
         <Center>
-          <button className="btn-start" onClick={() => void start()} aria-label="Start">
+          <button className="btn-start" onClick={() => { setPhase("instructions"); }} aria-label="Start">
             START
           </button>
+        </Center>
+      )}
+
+      {phase === "instructions" && (
+        <Center>
+          <div className="instructions-panel" style={{ color: show.palette.ink, textAlign: "center", maxWidth: 640, padding: 20, animation: "fadeIn 0.3s ease" }}>
+            <div style={{ font: "bold 48px system-ui", marginBottom: 4 }}>{show.title}</div>
+            <div style={{ font: "600 18px system-ui", opacity: 0.5, marginBottom: 24 }}>
+              {mode.charAt(0).toUpperCase() + mode.slice(1)} mode · {profile === "seated" ? "Seated" : "Standing"}
+            </div>
+
+            <div style={{ font: "600 22px system-ui", marginBottom: 16 }}>How to play</div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginBottom: 24 }}>
+              {show.vocabulary.map((g: string) => {
+                const info = GESTURE_INFO[g];
+                if (!info) return null;
+                return (
+                  <div key={g} style={{
+                    background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "12px 16px",
+                    border: "1px solid rgba(255,255,255,0.1)", minWidth: 120,
+                  }}>
+                    <div style={{ fontSize: 36 }}>{info.icon}</div>
+                    <div style={{ font: "bold 20px system-ui", marginTop: 4 }}>{info.name}</div>
+                    <div style={{ font: "600 13px system-ui", opacity: 0.5, marginTop: 2 }}>{info.desc}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ font: "600 16px system-ui", opacity: 0.6, marginBottom: 24 }}>
+              A shape will appear with a cue. Do the move when the shape lights up. Stay active to earn points!
+            </div>
+
+            <button className="btn-start" onClick={() => void beginCalibration()} aria-label="Ready">
+              Ready
+            </button>
+          </div>
         </Center>
       )}
 
@@ -256,12 +257,8 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
         <Center>
           <div style={{ color: show.palette.ink, font: "bold 28px system-ui", textAlign: "center", maxWidth: 600, animation: "fadeIn 0.3s ease" }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>Something went wrong</div>
-            <div style={{ opacity: 0.7, fontSize: 20, wordBreak: "break-word", marginBottom: 24 }}>
-              {errorMessage}
-            </div>
-            <button className="btn-start" onClick={() => { setPhase("idle"); setErrorMessage(""); stopAll(); }}>
-              Try again
-            </button>
+            <div style={{ opacity: 0.7, fontSize: 20, wordBreak: "break-word", marginBottom: 24 }}>{errorMessage}</div>
+            <button className="btn-start" onClick={() => { setPhase("idle"); setErrorMessage(""); stopAll(); }}>Try again</button>
           </div>
         </Center>
       )}
@@ -295,19 +292,10 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
         </Center>
       )}
 
-      <canvas
-        ref={canvasRef}
-        width={1280}
-        height={720}
-        style={{ width: "100%", height: "100%", display: phase === "running" ? "block" : "none" }}
-      />
+      <canvas ref={canvasRef} width={1280} height={720} style={{ width: "100%", height: "100%", display: phase === "running" ? "block" : "none" }} />
 
       {phase === "running" && (
-        <button
-          onClick={finish}
-          aria-label="Finish"
-          className="btn-finish"
-        >
+        <button onClick={finish} aria-label="Finish" className="btn-finish">
           Finish
         </button>
       )}
@@ -323,12 +311,8 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
             }}>
               {summary.teamScore}
             </div>
-            <div style={{ font: "bold 36px system-ui", opacity: 0.7, marginTop: 8 }}>
-              Movement Points
-            </div>
-            <div style={{ font: "600 24px system-ui", opacity: 0.5, marginTop: 4 }}>
-              {team.label}
-            </div>
+            <div style={{ font: "bold 36px system-ui", opacity: 0.7, marginTop: 8 }}>Movement Points</div>
+            <div style={{ font: "600 24px system-ui", opacity: 0.5, marginTop: 4 }}>{team.label}</div>
             <div style={{ marginTop: 24, display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
               {[
                 { label: "Active", value: `${Math.round(summary.activeSeconds)}s` },
@@ -339,11 +323,8 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
                 { label: "Reaches", value: String(summary.gestureCounts.reach) },
               ].map((stat) => (
                 <div key={stat.label} style={{
-                  background: "rgba(255,255,255,0.06)",
-                  borderRadius: 14,
-                  padding: "12px 20px",
-                  backdropFilter: "blur(8px)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "12px 20px",
+                  backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.08)",
                 }}>
                   <div style={{ font: "600 14px system-ui", opacity: 0.5, textTransform: "uppercase", letterSpacing: "1px" }}>{stat.label}</div>
                   <div style={{ font: "bold 28px system-ui", marginTop: 2 }}>{stat.value}</div>
@@ -370,10 +351,6 @@ function ArenaStyles(): React.JSX.Element {
         0%,100% { box-shadow: 0 0 15px rgba(124,58,237,0.4), 0 0 30px rgba(124,58,237,0.2); }
         50% { box-shadow: 0 0 25px rgba(124,58,237,0.6), 0 0 50px rgba(124,58,237,0.3); }
       }
-      @keyframes neonFlicker {
-        0%,19%,21%,23%,25%,54%,56%,100% { opacity: 1; }
-        20%,24%,55% { opacity: 0.8; }
-      }
       .btn-start {
         font: bold 64px system-ui, sans-serif;
         padding: 28px 72px;
@@ -386,17 +363,11 @@ function ArenaStyles(): React.JSX.Element {
         transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
         animation: glowPulse 2s ease-in-out infinite;
       }
-      .btn-start:hover {
-        transform: scale(1.06);
-      }
-      .btn-start:active {
-        transform: scale(0.95);
-        transition: all 0.1s ease;
-      }
+      .btn-start:hover { transform: scale(1.06); }
+      .btn-start:active { transform: scale(0.95); transition: all 0.1s ease; }
       .btn-finish {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
+        bottom: 20px; right: 20px;
         font: bold 28px system-ui;
         padding: 12px 32px;
         border: 2px solid rgba(255,255,255,0.3);
@@ -408,14 +379,12 @@ function ArenaStyles(): React.JSX.Element {
         -webkit-backdrop-filter: blur(8px);
         transition: all 0.25s ease;
       }
-      .btn-finish:hover {
-        background: rgba(239,68,68,0.3);
-        border-color: rgba(239,68,68,0.6);
-        box-shadow: 0 0 20px rgba(239,68,68,0.3);
-      }
-      .btn-finish:active {
-        transform: scale(0.93);
-        transition: all 0.1s ease;
+      .btn-finish:hover { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.6); box-shadow: 0 0 20px rgba(239,68,68,0.3); }
+      .btn-finish:active { transform: scale(0.93); transition: all 0.1s ease; }
+      @media (max-width: 600px) {
+        .btn-start { font-size: 42px !important; padding: 20px 48px !important; }
+        .btn-finish { font-size: 22px !important; padding: 8px 24px !important; }
+        .instructions-panel { padding: 12px !important; font-size: 14px !important; }
       }
     `}</style>
   );
@@ -423,16 +392,7 @@ function ArenaStyles(): React.JSX.Element {
 
 function Center({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 2,
-      }}
-    >
+    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
       {children}
     </div>
   );
