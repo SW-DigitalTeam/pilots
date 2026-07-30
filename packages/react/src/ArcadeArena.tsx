@@ -121,9 +121,25 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
     await backend.unlock();
     backendRef.current = backend;
 
+    // Load the show's AI/original music track if configured; fall back to
+    // full procedural music silently if it's missing or fails to decode.
+    let musicTrack: AudioBuffer | undefined;
+    if (show.music.trackUrl) {
+      try {
+        const res = await fetch(show.music.trackUrl);
+        if (res.ok) {
+          const bytes = await res.arrayBuffer();
+          musicTrack = await backend.ctx.decodeAudioData(bytes);
+        }
+      } catch {
+        musicTrack = undefined;
+      }
+    }
+
     const engine = new ArcadeEngine({
       show, mode, team, profile, consent, backend,
       language: props.language,
+      musicTrack,
       onEvidence: (claim) => props.onEvidence(claim as CameraPoseClaim),
       onSessionEnd: (s) => props.onSessionEnd?.(s),
     });

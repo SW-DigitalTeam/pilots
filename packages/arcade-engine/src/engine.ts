@@ -4,6 +4,7 @@ import type { AudioBackend } from "./audio/backend.js";
 import { Transport } from "./audio/clock.js";
 import { CueBank } from "./audio/cueBank.js";
 import { MusicBed } from "./audio/musicBed.js";
+import { TrackBed } from "./audio/trackBed.js";
 import { DegradationController, type DegradationLevel } from "./degradation.js";
 import { summaryToClaim } from "./evidence.js";
 import { PoseInterpreter } from "./interpreter.js";
@@ -32,6 +33,10 @@ export interface EngineOptions {
   score?: ScoreConfig;
   scheduler?: Partial<SchedulerOptions>;
   rng?: () => number;
+  /** Decoded AI/original music track to play as the bed instead of full
+   * procedural synthesis. The procedural kick+hats still run as the beat
+   * reference the calls land on. */
+  musicTrack?: AudioBuffer;
   onEvidence?: (claim: ReturnType<typeof summaryToClaim>) => void;
   onSessionEnd?: (summary: SessionSummary) => void;
 }
@@ -151,6 +156,16 @@ export class ArcadeEngine {
     const t0 = this.opts.backend.currentTime + 0.12;
     this.transport = new Transport(music.bpm, music.beatsPerBar, music.stepsPerBeat, t0);
     this.scheduler = new AudioScheduler(this.opts.backend, this.transport, this.bed, this.opts.scheduler);
+
+    // If an AI/original music track is provided, loop it stretched to a whole
+    // number of bars and drop the procedural bed to a crisp kick+hats rhythm
+    // skeleton so the calls still land exactly on the grid.
+    if (this.opts.musicTrack && this.opts.backend.playLoop) {
+      const trackBed = new TrackBed(this.opts.musicTrack, music);
+      this.opts.backend.playLoop(trackBed.loopSpec(t0, 0.8));
+      this.bed.layerFilter = new Set(["kick", "kickBounce", "hats"]);
+    }
+
     this.scheduler.setIntensity(2);
     this.startedAt = Date.now();
     this.phase = "running";
@@ -306,6 +321,7 @@ export class ArcadeEngine {
     this.finalSummary = summary;
     this.phase = "ended";
     this.scheduler?.stop();
+    this.opts.backend.stopLoop?.();
     this.consentUnsub?.();
     this.consentUnsub = null;
     if (this.opts.onEvidence) this.opts.onEvidence(summaryToClaim(summary));

@@ -63,6 +63,13 @@ export interface MusicConfig {
     pad: MusicLayerConfig;
     lead: MusicLayerConfig;
   };
+  /**
+   * Optional path to an AI-generated/original music track (mp3/wav). When
+   * present, the track loops as the bed and the procedural synth drops to a
+   * rhythm skeleton. Falls back to full procedural music when absent or if
+   * the file fails to load.
+   */
+  trackUrl?: string;
 }
 
 export interface ModeConfig {

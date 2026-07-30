@@ -43,6 +43,7 @@ export const PURE_SHAPES: ShowConfig = {
       pad: { fromIntensity: 2 },
       lead: { fromIntensity: 5 }, // lead stays out until very high intensity
     },
+    trackUrl: "/audio/music/grid.mp3",
   },
   character: null,
   vocabulary: ["jump", "duck", "reach", "sidestep"],

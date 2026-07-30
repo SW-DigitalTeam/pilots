@@ -28,6 +28,17 @@ export interface VoiceSpec {
   buffer?: AudioBuffer;
 }
 
+export interface LoopSpec {
+  /** The decoded music track. */
+  buffer: AudioBuffer;
+  /** Absolute time on the audio clock to start the loop. */
+  when: number;
+  /** Rate to stretch the track so it loops over a whole number of bars. */
+  playbackRate: number;
+  /** Peak gain 0..1 before the music-bus fader. */
+  gain: number;
+}
+
 export interface AudioBackend {
   /** The master clock. */
   readonly currentTime: number;
@@ -35,6 +46,11 @@ export interface AudioBackend {
   scheduleTone(spec: ToneSpec): void;
   /** Schedule a voice cue buffer at an absolute time. */
   scheduleVoice(spec: VoiceSpec): void;
+  /** Play a music track as a seamless loop starting at `when`. Optional so
+   * headless/test backends can ignore it. */
+  playLoop?(spec: LoopSpec): void;
+  /** Stop a loop started by playLoop (e.g. at session end). */
+  stopLoop?(): void;
   /** Duck the music bus by `db` starting at `when` over `rampMs`. */
   duck(when: number, db: number, rampMs: number): void;
   /** Recover the music bus at `when` over `rampMs`. */
@@ -52,6 +68,7 @@ export class FakeAudioBackend implements AudioBackend {
   currentTime = 0;
   readonly tones: ToneSpec[] = [];
   readonly voices: VoiceSpec[] = [];
+  readonly loops: LoopSpec[] = [];
   readonly ducks: RecordedDuck[] = [];
   readonly unducks: Array<{ when: number; rampMs: number }> = [];
 
@@ -60,6 +77,12 @@ export class FakeAudioBackend implements AudioBackend {
   }
   scheduleVoice(spec: VoiceSpec): void {
     this.voices.push(spec);
+  }
+  playLoop(spec: LoopSpec): void {
+    this.loops.push(spec);
+  }
+  stopLoop(): void {
+    /* no-op for tests */
   }
   duck(when: number, db: number, rampMs: number): void {
     this.ducks.push({ when, db, rampMs });

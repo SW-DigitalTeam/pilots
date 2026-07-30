@@ -24,10 +24,11 @@ export { Transport } from "./audio/clock.js";
 export { AudioScheduler, DEFAULT_SCHEDULER } from "./audio/scheduler.js";
 export type { SchedulerOptions } from "./audio/scheduler.js";
 export { MusicBed } from "./audio/musicBed.js";
+export { TrackBed } from "./audio/trackBed.js";
 export { CueBank } from "./audio/cueBank.js";
 export { WebAudioBackend, synthesizePlaceholder } from "./audio/webAudioBackend.js";
 export { FakeAudioBackend } from "./audio/backend.js";
-export type { AudioBackend, ToneSpec, VoiceSpec, Waveform } from "./audio/backend.js";
+export type { AudioBackend, ToneSpec, VoiceSpec, Waveform, LoopSpec } from "./audio/backend.js";
 
 export { summaryToClaim } from "./evidence.js";
 

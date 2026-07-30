@@ -47,6 +47,7 @@ export const YEAR_9_10: ShowConfig = {
       pad: { fromIntensity: 3 },
       lead: { fromIntensity: 4 },
     },
+    trackUrl: "/audio/music/baseline.mp3",
   },
   // A character, but re-registered as a slick crew MC silhouette, not a mascot.
   character: { name: "MC", bodyColor: "#14141c", accentColor: "#00ffa3" },

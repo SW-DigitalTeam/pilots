@@ -41,6 +41,7 @@ export const YEAR_7_8: ShowConfig = {
       pad: { fromIntensity: 3 },
       lead: { fromIntensity: 4 },
     },
+    trackUrl: "/audio/music/tarapi.mp3",
   },
   character: { name: "Tarapī", bodyColor: "#ff2e63", accentColor: "#ffd400" },
   vocabulary: ["jump", "duck", "reach", "sidestep"],

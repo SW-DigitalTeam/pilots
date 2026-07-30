@@ -12,6 +12,7 @@
     "privacy:audit": "node scripts/privacy-audit.mjs",
     "gen:fixtures": "node scripts/generate-fixtures.mjs",
     "gen:voice": "node scripts/generate-voice-script.mjs",
+    "gen:music": "node scripts/generate-music.mjs",
     "verify": "pnpm typecheck && pnpm test && pnpm privacy:audit",
     "dev:standard": "pnpm --filter @sw/app-standard dev",
     "build:standard": "pnpm --filter @sw/app-standard build"

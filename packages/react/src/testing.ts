@@ -5,6 +5,10 @@ import type { CaptureOptions, PoseCapture } from "./capture/types.js";
 /** A deterministic, silent backend for component/integration tests. */
 export class FakeBrowserBackend extends FakeAudioBackend implements BrowserBackend {
   amplitude = 0;
+  /** Tests never decode real audio; present only to satisfy the interface. */
+  readonly ctx = {
+    decodeAudioData: () => Promise.reject(new Error("FakeBrowserBackend cannot decode audio")),
+  } as unknown as AudioContext;
   async unlock(): Promise<void> {
     /* already "running" */
   }

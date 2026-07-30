@@ -1,4 +1,4 @@
-import type { AudioBackend, ToneSpec, VoiceSpec } from "./backend.js";
+import type { AudioBackend, LoopSpec, ToneSpec, VoiceSpec } from "./backend.js";
 
 /**
  * Web Audio implementation of the backend.
@@ -14,6 +14,7 @@ export class WebAudioBackend implements AudioBackend {
   readonly voiceBus: GainNode;
   readonly voiceAnalyser: AnalyserNode;
   private noiseBuffer: AudioBuffer | null = null;
+  private loopSource: AudioBufferSourceNode | null = null;
   private readonly baseMusicGain = 0.9;
 
   constructor(readonly ctx: AudioContext) {
@@ -83,6 +84,31 @@ export class WebAudioBackend implements AudioBackend {
     src.buffer = spec.buffer ?? synthesizePlaceholder(ctx, spec.durationSeconds);
     src.connect(this.voiceBus);
     src.start(spec.when);
+  }
+
+  playLoop(spec: LoopSpec): void {
+    const { ctx } = this;
+    this.stopLoop();
+    const src = ctx.createBufferSource();
+    src.buffer = spec.buffer;
+    src.loop = true;
+    src.playbackRate.value = spec.playbackRate;
+    const gain = ctx.createGain();
+    gain.gain.value = spec.gain;
+    src.connect(gain).connect(this.musicBus);
+    src.start(spec.when);
+    this.loopSource = src;
+  }
+
+  stopLoop(): void {
+    if (this.loopSource) {
+      try {
+        this.loopSource.stop();
+      } catch {
+        /* already stopped */
+      }
+      this.loopSource = null;
+    }
   }
 
   duck(when: number, db: number, rampMs: number): void {

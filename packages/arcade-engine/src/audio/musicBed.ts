@@ -14,6 +14,12 @@ import type { ToneSpec, Waveform } from "./backend.js";
 export class MusicBed {
   private readonly stepsPerBar: number;
   private readonly secondsPerStep: number;
+  /**
+   * When set, only these layers are emitted. Used to drop the procedural bed
+   * to a crisp rhythm skeleton (kick + hats) while an external music track
+   * supplies the bass, chords and lead — no competing harmonies.
+   */
+  layerFilter: Set<string> | null = null;
 
   constructor(private readonly cfg: MusicConfig) {
     this.stepsPerBar = cfg.beatsPerBar * cfg.stepsPerBeat;
@@ -134,7 +140,7 @@ export class MusicBed {
       }
     }
 
-    return out;
+    return this.layerFilter ? out.filter((t) => this.layerFilter!.has(t.layer)) : out;
   }
 }
 
