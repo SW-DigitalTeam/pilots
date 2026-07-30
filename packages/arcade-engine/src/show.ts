@@ -94,6 +94,10 @@ export interface ShowConfig {
   targetYears: string;
   defaultLanguage: Language;
   palette: Palette;
+  /** Optional AI-generated background art. Drawn behind everything, darkened
+   * so gameplay elements pop. Falls back to the procedural background when
+   * absent or if the image fails to load. */
+  backgroundUrl?: string;
   music: MusicConfig;
   cues: Cue[];
   /** null = the deliberately character-free show. */

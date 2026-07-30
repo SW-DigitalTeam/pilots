@@ -59,11 +59,26 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
   const captureRef = useRef<PoseCapture | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const previewRef = useRef<HTMLDivElement | null>(null);
+  const bgImageRef = useRef<HTMLImageElement | null>(null);
   const phaseRef = useRef<Phase>("idle");
   const calStartRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
 
   phaseRef.current = phase;
+
+  // Preload the show's AI background art; null means use procedural background.
+  useEffect(() => {
+    bgImageRef.current = null;
+    if (!show.backgroundUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      bgImageRef.current = img;
+    };
+    img.src = show.backgroundUrl;
+    return () => {
+      bgImageRef.current = null;
+    };
+  }, [show]);
 
   const stopAll = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
@@ -109,7 +124,9 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
         const state = engine.getRenderState(backend.currentTime);
         const amp = backend.voiceAmplitude();
         drawFrame(ctx, { width: canvas.width, height: canvas.height }, state, show, {
-          mouth: mouthShapeForAmplitude(amp), voiceAmp: amp,
+          mouth: mouthShapeForAmplitude(amp),
+          voiceAmp: amp,
+          backgroundImage: bgImageRef.current,
         });
       }
     }

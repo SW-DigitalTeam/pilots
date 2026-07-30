@@ -34,6 +34,7 @@ export const YEAR_9_10: ShowConfig = {
       sidestep: { color: "#c56bff", shape: "chevron" },
     },
   },
+  backgroundUrl: "/assets/bg/baseline.png",
   music: {
     bpm: 100,
     beatsPerBar: 4,

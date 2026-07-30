@@ -28,6 +28,7 @@ export const YEAR_7_8: ShowConfig = {
       sidestep: { color: "#ff8a00", shape: "chevron" },
     },
   },
+  backgroundUrl: "/assets/bg/tarapi.png",
   music: {
     bpm: 128,
     beatsPerBar: 4,

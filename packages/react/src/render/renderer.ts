@@ -9,6 +9,8 @@ export interface RenderDims {
 export interface RenderOptions {
   mouth: MouthShape;
   voiceAmp: number;
+  /** Optional AI-generated background art; darkened so gameplay pops. */
+  backgroundImage?: HTMLImageElement | null;
 }
 
 // ── Stage environment ──────────────────────────────────────────────
@@ -100,7 +102,7 @@ export function drawFrame(
   beatFlash *= 0.9;
   danceCycle = state.beat % 1;
 
-  drawBackground(ctx, dims, p, state, beatFlash);
+  drawBackground(ctx, dims, p, state, beatFlash, opts.backgroundImage ?? null);
   drawStageFloor(ctx, dims, p);
   drawOrbs(ctx, dims, beatFlash);
   drawBeatBar(ctx, dims, state, p.accent, show.music.beatsPerBar);
@@ -175,13 +177,25 @@ function drawBackground(
   p: ShowConfig["palette"],
   state: RenderState,
   beatFlash: number,
+  backgroundImage: HTMLImageElement | null,
 ): void {
-  const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, p.background);
-  grad.addColorStop(0.5, darken(p.background, 0.15));
-  grad.addColorStop(1, darken(p.background, 0.4));
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, w, h);
+  // AI background art, drawn cover-fit and darkened so gameplay elements pop.
+  if (backgroundImage) {
+    const scale = Math.max(w / backgroundImage.width, h / backgroundImage.height);
+    const iw = backgroundImage.width * scale;
+    const ih = backgroundImage.height * scale;
+    ctx.drawImage(backgroundImage, (w - iw) / 2, (h - ih) / 2, iw, ih);
+    // darken for contrast + keep the show's identity tint
+    ctx.fillStyle = "rgba(0,0,0,0.38)";
+    ctx.fillRect(0, 0, w, h);
+  } else {
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, p.background);
+    grad.addColorStop(0.5, darken(p.background, 0.15));
+    grad.addColorStop(1, darken(p.background, 0.4));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  }
 
   // Spotlights
   for (const x of [w * 0.2, w * 0.8]) {

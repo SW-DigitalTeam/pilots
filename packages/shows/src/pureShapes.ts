@@ -30,6 +30,7 @@ export const PURE_SHAPES: ShowConfig = {
       sidestep: { color: "#2b50e6", shape: "square" },
     },
   },
+  backgroundUrl: "/assets/bg/grid.png",
   music: {
     bpm: 120,
     beatsPerBar: 4,
