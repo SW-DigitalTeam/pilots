@@ -53,10 +53,18 @@ export class WebAudioBackend implements AudioBackend {
     if (spec.waveform === "noise") {
       const src = ctx.createBufferSource();
       src.buffer = this.getNoise();
-      const bp = ctx.createBiquadFilter();
-      bp.type = "highpass";
-      bp.frequency.value = spec.freq;
-      src.connect(bp).connect(gain);
+      const filter = ctx.createBiquadFilter();
+      // Snare-ish layers (lower freq) get a bandpass "thwack"; bright hats get
+      // a highpass "tss".
+      if (spec.freq < 5000) {
+        filter.type = "bandpass";
+        filter.frequency.value = spec.freq;
+        filter.Q.value = 1.2;
+      } else {
+        filter.type = "highpass";
+        filter.frequency.value = spec.freq;
+      }
+      src.connect(filter).connect(gain);
       src.start(spec.when);
       src.stop(spec.when + spec.duration);
     } else {

@@ -151,7 +151,7 @@ export class ArcadeEngine {
     const t0 = this.opts.backend.currentTime + 0.12;
     this.transport = new Transport(music.bpm, music.beatsPerBar, music.stepsPerBeat, t0);
     this.scheduler = new AudioScheduler(this.opts.backend, this.transport, this.bed, this.opts.scheduler);
-    this.scheduler.setIntensity(1);
+    this.scheduler.setIntensity(2);
     this.startedAt = Date.now();
     this.phase = "running";
 
@@ -223,8 +223,9 @@ export class ArcadeEngine {
   private updateIntensity(now: number): void {
     if (!this.transport || !this.scheduler) return;
     const bar = Math.floor(this.transport.beatAtTime(now) / this.transport.beatsPerBar);
-    // Ramp one tier every 8 bars, capped at 5.
-    this.scheduler.setIntensity(Math.min(5, 1 + Math.floor(Math.max(0, bar) / 8)));
+    // Start at tier 2 (kick+bass+hats on immediately), ramp one tier every 4
+    // bars so the full arrangement lands inside the first ~12 bars of play.
+    this.scheduler.setIntensity(Math.min(5, 2 + Math.floor(Math.max(0, bar) / 4)));
   }
 
   /** Plan and enqueue upcoming calls within the horizon. */
