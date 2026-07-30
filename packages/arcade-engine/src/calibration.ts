@@ -40,6 +40,17 @@ export function torsoLength(pose: Pose): number {
   return dist(shoulderCentroid(pose), hipCentroid(pose));
 }
 
+/** Shoulder width as an alternative scale reference when hips are not visible. */
+export function shoulderWidth(pose: Pose): number {
+  return dist(pose.landmarks[LM.LEFT_SHOULDER]!, pose.landmarks[LM.RIGHT_SHOULDER]!);
+}
+
+/** Scale reference per profile: torso length for standing, shoulder width for seated. */
+export function profileScale(pose: Pose, profile: InputProfile): number {
+  if (profile === "seated") return shoulderWidth(pose) || 1e-6;
+  return torsoLength(pose) || 1e-6;
+}
+
 /** Knee angle at the more-visible leg; falls back to a straight leg. */
 export function kneeAngle(pose: Pose): number {
   const legs: Array<[number, number, number]> = [

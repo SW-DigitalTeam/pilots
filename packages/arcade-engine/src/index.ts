@@ -11,7 +11,7 @@ export type {
 export { PoseInterpreter } from "./interpreter.js";
 export type { InterpretResult } from "./interpreter.js";
 
-export { Calibrator, scaleDrifted } from "./calibration.js";
+export { Calibrator, scaleDrifted, shoulderWidth, profileScale } from "./calibration.js";
 export type { Calibration } from "./calibration.js";
 export { PlayerTracker } from "./tracker.js";
 

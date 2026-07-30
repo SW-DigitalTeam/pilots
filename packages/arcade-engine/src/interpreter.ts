@@ -4,6 +4,7 @@ import {
   requiredVisible,
   shoulderCentroid,
   torsoLength,
+  profileScale,
 } from "./calibration.js";
 import { LM, type InputProfile } from "./landmarks.js";
 import { clamp, dist } from "./math.js";
@@ -209,20 +210,20 @@ export class PoseInterpreter {
 
   /** Feed a still-stand frame during the calibration window. */
   addCalibrationFrame(frame: PoseFrame): void {
+    const anchor = this.profile === "seated" ? shoulderCentroid : hipCentroid;
     for (const pose of frame.poses) {
       if (!requiredVisible(pose, this.profile)) continue;
-      // Bootstrap identity: register any unmatched still pose, then accumulate.
       const matched = this.tracker.match({ timestampMs: frame.timestampMs, poses: [pose] });
       let id: number;
       if (matched.length === 0) {
-        id = this.tracker.register(hipCentroid(pose), torsoLength(pose));
+        id = this.tracker.register(anchor(pose), profileScale(pose, this.profile));
         if (id < 0) continue;
         this.calAccum.set(id, { torsos: [], knees: [] });
       } else {
         id = matched[0]!.id;
       }
       const acc = this.calAccum.get(id)!;
-      acc.torsos.push(torsoLength(pose));
+      acc.torsos.push(profileScale(pose, this.profile));
       acc.knees.push(this.profile === "seated" ? Math.PI : measureKnee(pose));
     }
   }
@@ -264,8 +265,8 @@ export class PoseInterpreter {
     let magN = 0;
     for (const { id, pose } of matched) {
       const rt = this.runtimes.get(id);
-      if (!rt) continue; // matched a slot with no finalised runtime -> ignore
-      rt.refreshScale(torsoLength(pose));
+      if (!rt) continue;
+      rt.refreshScale(profileScale(pose, this.profile));
       const res = rt.process(pose, now);
       events.push(...res.events);
       magSum += res.magnitude;

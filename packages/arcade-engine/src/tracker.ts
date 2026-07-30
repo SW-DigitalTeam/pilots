@@ -1,4 +1,4 @@
-import { hipCentroid, requiredVisible, torsoLength } from "./calibration.js";
+import { hipCentroid, requiredVisible, shoulderCentroid, profileScale } from "./calibration.js";
 import { dist, type Vec2 } from "./math.js";
 import type { InputProfile, Pose, PoseFrame } from "./types.js";
 
@@ -6,11 +6,9 @@ import type { InputProfile, Pose, PoseFrame } from "./types.js";
  * Stable per-player identity across frames.
  *
  * Players are *registered* during calibration. During play we only ever report
- * poses that match a registered slot, matched by nearest hip-centroid within a
- * torso-scaled gate. This is what makes a bystander walking through the frame a
- * non-event: they never registered, so their motion is never attributed to a
- * player. It also stops identity swaps when two people pass close, because a
- * swap would require crossing the gate and beating the incumbent distance.
+ * poses that match a registered slot, matched by nearest centroid within a
+ * torso-scaled gate. For seated the shoulder centroid is used since hips are
+ * often out of frame on phone cameras.
  */
 export interface PlayerSlot {
   id: number;
@@ -21,6 +19,10 @@ export interface PlayerSlot {
 export interface MatchedPlayer {
   id: number;
   pose: Pose;
+}
+
+function anchorOf(pose: Pose, profile: InputProfile): Vec2 {
+  return profile === "seated" ? shoulderCentroid(pose) : hipCentroid(pose);
 }
 
 export class PlayerTracker {
@@ -56,7 +58,7 @@ export class PlayerTracker {
     const pairs: Array<{ slot: PlayerSlot; pose: Pose; d: number }> = [];
     for (const slot of this.slots) {
       for (const pose of candidates) {
-        const d = dist(slot.anchor, hipCentroid(pose));
+        const d = dist(slot.anchor, anchorOf(pose, this.profile));
         if (d <= this.gateTorsos * slot.torso) pairs.push({ slot, pose, d });
       }
     }
@@ -69,8 +71,8 @@ export class PlayerTracker {
       if (usedSlots.has(slot.id) || usedPoses.has(pose)) continue;
       usedSlots.add(slot.id);
       usedPoses.add(pose);
-      slot.anchor = hipCentroid(pose);
-      slot.torso = torsoLength(pose);
+      slot.anchor = anchorOf(pose, this.profile);
+      slot.torso = profileScale(pose, this.profile);
       out.push({ id: slot.id, pose });
     }
     return out.sort((a, b) => a.id - b.id);

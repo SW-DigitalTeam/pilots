@@ -198,12 +198,42 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
           style={{
             position: "absolute", bottom: 24, left: 24,
             width: "min(220px, 28vw)", height: "min(160px, 20vw)",
-            borderRadius: 12, border: "2px solid rgba(255,255,255,0.2)",
+            borderRadius: 12, border: "2px solid rgba(255,255,255,0.25)",
             boxShadow: "0 0 20px rgba(0,0,0,0.4)",
             background: "#000", overflow: "hidden",
             zIndex: 10,
           }}
-        />
+        >
+          <div style={{
+            position: "absolute", inset: 0,
+            border: "3px dashed rgba(0,255,163,0.4)",
+            borderRadius: 12,
+            pointerEvents: "none", zIndex: 1,
+          }} />
+          {profile === "standing" && (
+            <div style={{
+              position: "absolute", top: "20%", left: "25%", right: "25%", bottom: "10%",
+              border: "2px dashed rgba(0,255,163,0.25)",
+              borderRadius: 8,
+              pointerEvents: "none", zIndex: 1,
+            }} />
+          )}
+          {profile === "seated" && (
+            <div style={{
+              position: "absolute", top: "10%", left: "20%", right: "20%", bottom: "50%",
+              border: "2px dashed rgba(0,255,163,0.25)",
+              borderRadius: 8,
+              pointerEvents: "none", zIndex: 1,
+            }} />
+          )}
+          <div style={{
+            position: "absolute", top: 6, left: 8,
+            font: "600 10px system-ui", color: "rgba(255,255,255,0.5)",
+            pointerEvents: "none", zIndex: 2,
+          }}>
+            {profile === "seated" ? "Show shoulders" : "Show full body"}
+          </div>
+        </div>
       )}
 
       {phase === "idle" && (
@@ -245,7 +275,9 @@ export function ArcadeArena(props: ArcadeArenaProps): React.JSX.Element {
             <div style={{ font: "600 22px system-ui", opacity: 0.6, marginTop: 14 }}>
               {calFrames > 0
                 ? `Detected ${calFrames} frames — hold steady`
-                : "Make sure your shoulders and hips are visible"}
+                : profile === "seated"
+                  ? "Position your shoulders in the green frame guide"
+                  : "Position your full body in the green frame guide"}
             </div>
             {calFrames > 0 && (
               <div style={{ marginTop: 16, display: "flex", gap: 6, justifyContent: "center" }}>

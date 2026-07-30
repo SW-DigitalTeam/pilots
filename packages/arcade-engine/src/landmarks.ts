@@ -34,7 +34,8 @@ export const REQUIRED_LANDMARKS: Record<InputProfile, number[]> = {
     LM.LEFT_KNEE,
     LM.RIGHT_KNEE,
   ],
-  // Seated: knees/ankles are often occluded by a desk, so the seated profile
-  // does not require them and does not offer leg-driven gestures.
-  seated: [LM.LEFT_SHOULDER, LM.RIGHT_SHOULDER, LM.LEFT_HIP, LM.RIGHT_HIP],
+  // Seated: only shoulders and elbows are required — hips/knees are often
+  // occluded by a desk or out of frame on phone selfie cameras. Gestures are
+  // driven from the shoulder centroid and arm reach.
+  seated: [LM.LEFT_SHOULDER, LM.RIGHT_SHOULDER],
 };
